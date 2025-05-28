@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brayzi: Investor Insights Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        h1 {
+            font-size: 2.8em;
+            text-align: center;
+            color: #1a4d2e; /* Brayzi primary brand color */
+            border-bottom: 3px solid #1a4d2e;
+            padding-bottom: 15px;
+            margin-bottom: 40px;
+        }
+        h2 {
+            font-size: 2em;
+            color: #34495e;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h3 {
+            font-size: 1.5em;
+            color: #34495e;
+            margin-top: 20px;
+            border-bottom: 1px dashed #e0e0e0;
+            padding-bottom: 5px;
+        }
+        .section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: #fdfdfd;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .executive-summary {
+            background-color: #e8f5e9; /* Light green background */
+            border-left: 6px solid #4CAF50; /* Green border */
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .executive-summary p {
+            line-height: 1.7;
+            font-size: 1.15em;
+            color: #388e3c;
+        }
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        .metric-card {
+            background-color: #ecf0f1;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease-in-out;
+        }
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        .metric-card h4 {
+            margin-top: 0;
+            color: #555;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .metric-card .value {
+            font-size: 2.8em;
+            font-weight: bold;
+            color: #1a4d2e; /* Brayzi Green */
+            margin-top: 10px;
+        }
+        .chart-container {
+            width: 100%;
+            max-width: 500px; /* Adjusted slightly smaller for better presentation */
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            /* Important: No fixed height here, let Chart.js manage based on aspect ratio */
+        }
+        .chart-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px; /* Adjusted gap */
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .chart-row > div {
+            flex: 1 1 calc(50% - 15px); /* Allows two charts per row with gap consideration */
+            min-width: 300px; /* Minimum width for charts to avoid squishing */
+        }
+        ul {
+            margin-bottom: 10px;
+            padding-left: 25px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .inconvenience-analysis ul li {
+            font-size: 1.05em;
+            color: #555;
+        }
+        .color-palette {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        .color-box {
+            width: 40px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        .notes {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Brayzi: Market Insights for Angel Investors</h1>
+
+        <div class="executive-summary section">
+            <h2>Executive Summary: Capturing the Future of On-Demand Convenience</h2>
+            <p>
+                This report presents compelling insights from our market research survey, revealing a substantial unmet demand for ultra-fast delivery of alcohol and nicotine products among adult consumers. Brayzi is positioned to meet this demand by offering a streamlined, tech-enabled delivery experience.
+            </p>
+            <p>
+                Notably, over half of respondents indicated they would utilize a delivery service at least monthly, and 60% expressed a strong preference for delivery within one hour. Consumers frequently cited challenges with traditional retail—such as inconvenient travel, limited store hours, and product availability—underscoring a significant market gap.
+            </p>
+            <p>
+                With a clear alignment between consumer expectations and Brayzi’s capabilities, the company presents an attractive investment opportunity in a growing, underpenetrated segment of the convenience economy.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>Introduction: Brayzi's Vision</h2>
+            <p>
+                Brayzi is on a mission to modernize how adults access alcohol and nicotine products by offering a reliable, ultra-fast delivery service. This survey was conducted to assess consumer purchasing behavior, identify friction points in existing channels, and validate the demand for an alternative that prioritizes convenience and speed.
+            </p>
+            <p>
+                A total of <strong id="totalRespondentsCount"></strong> individuals participated in this study, contributing valuable perspectives on their shopping patterns and preferences.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>Key Investment Metrics</h2>
+            <p>The following key metrics highlight the strong market appetite for Brayzi’s service model and the potential for sustained consumer engagement.</p>
+            <div class="metric-grid" id="keyMetrics">
+                <!-- Metrics will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Detailed Market Analysis</h2>
+
+            <h3>Alcohol Consumption & Purchase Habits</h3>
+            <p>Understanding where and how often consumers buy alcohol, along with their spending habits, helps define the current landscape Brayzi aims to disrupt.</p>
+            <div class="chart-row">
+                <div class="chart-container">
+                    <h4>Where Consumers Purchase Alcohol</h4>
+                    <canvas id="alcoholPurchaseLocationChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h4>Alcohol Purchase Frequency</h4>
+                    <canvas id="alcoholPurchaseFrequencyChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h4>Monthly Alcohol Spending</h4>
+                    <canvas id="alcoholSpendingChart"></canvas>
+                </div>
+            </div>
+            <p>
+                Analysis reveals that the majority of alcohol purchases still occur at physical retailers (e.g., Local Liquor Store, Large Retailers). However, a small but growing portion already uses alcohol delivery apps, indicating an existing comfort with the delivery model. The spending patterns show a broad consumer base, with a substantial group spending up to $300 monthly, highlighting a valuable target segment for Brayzi's service.
+            </p>
+
+            <h3>Nicotine/Smoke Product Consumption & Purchase Habits</h3>
+            <p>The market for nicotine and smoke products also presents a significant opportunity, with similar demands for convenience and accessibility.</p>
+            <div class="chart-row">
+                <div class="chart-container">
+                    <h4>Where Consumers Purchase Nicotine/Smoke Products</h4>
+                    <canvas id="nicotinePurchaseLocationChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h4>Nicotine/Smoke Product Purchase Frequency</h4>
+                    <canvas id="nicotinePurchaseFrequencyChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h4>Monthly Nicotine/Smoke Product Spending</h4>
+                    <canvas id="nicotineSpendingChart"></canvas>
+                </div>
+            </div>
+            <p>
+                Similar to alcohol, physical stores (Gas Station, Smoke Shop) dominate nicotine/smoke product purchases. The frequency of purchase, particularly for "1-3x a week" and "2-3 times a month", points to a strong need for convenient, on-demand access that Brayzi can provide. The spending data shows a significant segment spending "Less than $100" but also a considerable portion in the "$100 - $300" range, indicating a valuable market for regular, smaller-basket purchases.
+            </p>
+
+            <h3>The Case for Ultra-Fast Delivery: Brayzi's Core Value Proposition</h3>
+            <p>This section directly validates Brayzi's core offering: ultra-fast delivery as a solution to consumer needs.</p>
+            <div class="chart-row">
+                <div class="chart-container">
+                    <h4>Anticipated Delivery Service Usage Frequency</h4>
+                    <canvas id="deliveryUsageFrequencyChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h4>Importance of Delivery Speed</h4>
+                    <canvas id="deliverySpeedImportanceChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h4>Consumer Preference: Delivery App vs. Physical Store</h4>
+                    <canvas id="preferenceChart"></canvas>
+                </div>
+            </div>
+            <p>
+                The data unequivocally shows a strong inclination towards using a delivery service frequently (over 50% would use monthly or more). A high demand for speed is evident, with 60% preferring delivery within an hour. Crucially, a significant portion of the market actively prefers the convenience of a delivery app over the traditional physical store visit, directly validating Brayzi's business model.
+            </p>
+
+            <h3>Identifying Consumer Pain Points: Why Brayzi is Needed</h3>
+            <div class="inconvenience-analysis">
+                <p>The qualitative feedback consistently highlights issues that Brayzi is uniquely positioned to solve, confirming a genuine market need.</p>
+                <h4>Top Inconveniences for Alcohol Purchase:</h4>
+                <ul id="alcoholInconveniences">
+                    <!-- Inconveniences will be inserted here -->
+                </ul>
+                <h4>Top Inconveniences for Nicotine/Smoke Product Purchase:</h4>
+                <ul id="nicotineInconveniences">
+                    <!-- Inconveniences will be inserted here -->
+                </ul>
+                <p>
+                    The most common frustrations include the time and effort involved in going to physical stores, restrictive store hours, the physical burden of carrying purchases, limited product selection, and price variations. Brayzi offers a direct solution to these widespread pain points, positioning itself as an essential service for the modern consumer seeking convenience and efficiency.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Conclusion & Investment Opportunity</h2>
+            <p>
+                The survey data unequivocally demonstrates a robust and underserved market for Brayzi's ultra-fast alcohol and nicotine/smoke product delivery service. Consumers are actively seeking more convenient alternatives to traditional purchasing methods, are willing to adopt delivery solutions, and highly value speed. The identified pain points reinforce the urgent need for an efficient, on-demand service like Brayzi.
+            </p>
+            <p>
+                Investing in Brayzi means investing in a rapidly growing segment of the convenience economy, addressing tangible consumer needs, and capturing a loyal customer base. We are confident that Brayzi will deliver significant returns by becoming the go-to platform for 21+ product delivery, providing unmatched convenience and efficiency to a eager market.
+            </p>
+        </div>
+
+        <div class="notes section">
+            <p><strong>Note on data interpretation:</strong> Qualitative responses for "inconvenience" were categorized based on thematic similarities to extract actionable insights. Responses like "I don’t purchase alcohol/nicotine/smoke products" were excluded from specific purchasing habit analyses but included in overall delivery preference and speed importance.</p>
+            <p><strong>Chart Colors:</strong> Primary Brayzi Green is used for key positive indicators and "Delivery App" preference. Other colors are used for distinction in multi-category charts.</p>
+            <div class="color-palette">
+                <div class="color-box" style="background-color: rgba(26, 77, 46, 0.7);" title="Brayzi Green"></div>
+                <div class="color-box" style="background-color: rgba(52, 152, 219, 0.7);" title="Blue"></div>
+                <div class="color-box" style="background-color: rgba(243, 156, 18, 0.7);" title="Orange"></div>
+                <div class="color-box" style="background-color: rgba(155, 89, 182, 0.7);" title="Purple"></div>
+                <div class="color-box" style="background-color: rgba(231, 76, 60, 0.7);" title="Red"></div>
+                <div class="color-box" style="background-color: rgba(149, 165, 166, 0.7);" title="Grey"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const surveyDataRaw = `Index,Time Spent Completing Survey,1: Name：,4: Where do you purchase alcohol?,5: Which Alcohol Delivery App?,"6: Approximately, how much do you spend on nicotine/smoke products every month?",7: How often do you purchase alcohol? (Not including bars or restaurants),"8: Approximately, how much do you spend on alcohol every month? (Not including bars or restaurants)",9: What's the most inconvenient thing about buying alcohol? - not required but we would love your answer :),10: Where do you purchase nicotine/smoke products?,11: Which Smoke Delivery App?,12: How often do you purchase nicotine/smoke products?,13: What's the most inconvenient thing about buying nicotine/smoke products? - not Required but we would love your answer :),14: How often would you use an alcohol & smoke product delivery service?,15: Does it matter how fast your delivery arrives?,16: Would you rather: 1. Use a delivery app to get your party products delivered to you within 3 hours for a small fee2. Go to physical stores to purchase your party products
+1,187s,Davarja Daniels,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,Once a month,Less than $100,going to the store,Gas Station,,2-3 times a month,going to the gas station,Once a month,Within 30 minutes,2. Physical Store
+2,253s,Abideen Azeez,Local Liquor Store,,$100 - $300,2-3 times a month,$100 - $300,,Smoke Shop,,1-3x a week,,Once a week,Within 1 hour,2. Physical Store
+3,452s,Alexis Doaks,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,Once a month,Less than $100,not open late at night,I don’t purchase nicotine/smoke products,,Never,,Never,Within 2 hour,2. Physical Store
+4,230s,Hunter Imler,"Large Retailer (Total Wine, Specs, Etc)",,$100 - $300,1-3x a week,$100 - $300,Does beer count?,Gas Station,,1-3x a week,Need more zyn,2-4x a week,Within 30 minutes,1. Delivery App
+5,139s,Jacob Garza,Alcohol Delivery App,Uber Eats,Less than $100,2-3 times a month,$300 - $500,,I don’t purchase nicotine/smoke products,,Never,,2-4x a month,Within 1 hour,1. Delivery App
+6,613s,James Murray,I don’t purchase alcohol,,Less than $100,Never,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 4 hours,2. Physical Store
+7,157s,Calvin Guidry,Local Liquor Store,,$300 - $500,2-3 times a month,$300 - $500,Can’t find rare bottles,Smoke Shop,,1-3x a week,My cigar brand is hard to find,Never,Within 2 hour,2. Physical Store
+8,147s,Carsten Middelhede,"Large Retailer (Total Wine, Specs, Etc)",,$100 - $300,2-3 times a month,$100 - $300,Buying it,Smoke Shop,,2-3 times a month,Buying it,Never,Within 1 hour,2. Physical Store
+9,146s,Efren Rivera,Local Liquor Store,,Less than $100,Once a month,Less than $100,Going to the store,Gas Station,,2-3 times a month,Price,Once a month,Within 1 hour,1. Delivery App
+10,87s,Brandon Reed,Local Liquor Store,,$100 - $300,2-3 times a month,$100 - $300,,Gas Station,,1-3x a week,Shit is out of stock sometimes,Once a month,Within 1 hour,1. Delivery App
+11,160s,Charles Cannon,I don’t purchase alcohol,,Less than $100,Never,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 30 minutes,2. Physical Store
+12,165s,John Horsey,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,2-3 times a month,$100 - $300,,Smoke Shop,,Once a month,,Never,Within 1 hour,2. Physical Store
+13,194s,Jason Dixit,"Large Retailer (Total Wine, Specs, Etc)",,$300 - $500,Once a month,Less than $100,,Online Retailers,,2-3 times a month,,Once a month,Within 1 hour,1. Delivery App
+14,133s,Simi Jaiyesimi,Local Liquor Store,,Less than $100,Once a month,$100 - $300,Driving to pick it up,I don’t purchase nicotine/smoke products,,Never,,2-4x a month,Within 30 minutes,1. Delivery App
+15,71s,Caleb Haight,Local Liquor Store,,Less than $100,2-3 times a month,$100 - $300,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 30 minutes,2. Physical Store
+16,78s,Whitney Ziesing,Local Liquor Store,,Less than $100,Once a month,Less than $100,NY taxes,I don’t purchase nicotine/smoke products,,Never,,Never,Within 4 hours,2. Physical Store
+17,121s,Ricky Faillace,Local Liquor Store,,Less than $100,2-3 times a month,$100 - $300,,I don’t purchase nicotine/smoke products,,Never,,Once a month,Within 1 hour,2. Physical Store
+18,71s,Kate Kolenik,Local Liquor Store,,Less than $100,Once a month,Less than $100,In NY how wine shops are separate from where you can purchase beer etc,I don’t purchase nicotine/smoke products,,Never,,Never,Within 4 hours,2. Physical Store
+19,59s,Rucha Khanolkar,Local Liquor Store,,Less than $100,1-3x a week,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 30 minutes,2. Physical Store
+20,77s,Elizabeth Rickert,Local Liquor Store,,Less than $100,2-3 times a month,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 30 minutes,2. Physical Store
+21,162s,Jake Kauffman,Local Liquor Store,,Less than $100,Once a month,Less than $100,Differing prices,I don’t purchase nicotine/smoke products,,Never,,Never,Within 30 minutes,2. Physical Store
+22,100s,Emily Foo,Local Liquor Store,,Less than $100,1-3x a week,$100 - $300,Price (adds up fast) or selection,I don’t purchase nicotine/smoke products,,Never,,Once a month,Within 1 hour,2. Physical Store
+23,106s,Christian Valen,I don’t purchase alcohol,,Less than $100,Once a month,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 1 hour,2. Physical Store
+24,243s,Carmen Schliesser,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,Once a month,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 1 hour,2. Physical Store
+25,105s,Margaret Olele,I don’t purchase alcohol,,Less than $100,Never,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 1 hour,2. Physical Store
+26,113s,Mariyum Rehan,Local Liquor Store,,Less than $100,Once a month,Less than $100,how early liquor stores close,Smoke Shop,,2-3 times a month,when they run out of my flavor :),2-4x a month,Within 1 hour,1. Delivery App
+27,204s,Lucia Zapata,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,2-3 times a month,Less than $100,Living in a city- having to carry the heavy bags/boxes while walking home,I don’t purchase nicotine/smoke products,,Never,,2-4x a month,Within 1 hour,1. Delivery App
+28,149s,Neima Moaven,Local Liquor Store,,Less than $100,Once a month,Less than $100,,Smoke Shop,,2-3 times a month,,Never,Within 30 minutes,1. Delivery App
+29,103s,Ibrahim Khan,Local Liquor Store,,Less than $100,1-3x a week,Less than $100,,Gas Station,,Once a month,,Never,Within 30 minutes,2. Physical Store
+30,107s,Kayode Odunuyi,Local Liquor Store,,Less than $100,Once a month,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Once a month,Within 1 hour,1. Delivery App
+31,148s,Adekemi Odunuyi,I don’t purchase alcohol,,Less than $100,Never,Less than $100,Having to get carded even though I look over 21,I don’t purchase nicotine/smoke products,,Never,,Never,Within 1 hour,2. Physical Store
+32,120s,Samiat Majekodunmi,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,1-3x a week,$100 - $300,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 30 minutes,2. Physical Store
+33,1795s,Nicole Jaiyesimi,Local Liquor Store,,Less than $100,Once a month,Less than $100,"Picking it up, understanding the differences between brands and types",I don’t purchase nicotine/smoke products,,Never,,Once a month,Within 2 hour,1. Delivery App
+34,123s,Symone Wilson,Local Liquor Store,,Less than $100,2-3 times a month,Less than $100,"lack of ratings and reviews, flavor profile of the wines etc.",I don’t purchase nicotine/smoke products,,Never,,Never,Within 1 hour,1. Delivery App
+35,97s,Matan Dalal,Local Liquor Store,,Less than $100,Once a month,Less than $100,"Needing to carry it on my bike, have no car",I don’t purchase nicotine/smoke products,,Never,,Once a month,Within 1 hour,1. Delivery App
+36,382s,Sukhjot Mand,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,2-3 times a month,Less than $100,"Not always able to get the right size, right bottle",Smoke Shop,,2-3 times a month,Them not having specific vapes or tobacco wraps I need,2-4x a month,Within 30 minutes,2. Physical Store
+37,88s,Aziz Hatamleh,I don’t purchase alcohol,,Less than $100,Never,Less than $100,,Smoke Shop,,2-3 times a month,,Never,Within 30 minutes,2. Physical Store
+38,156s,Sheridan Dela Cruz,Local Liquor Store,,$100 - $300,2-3 times a month,Less than $100,buying the alcohol and finding deals on decent products,Smoke Shop,,1-3x a week,buying it in person and finding deals or new products to try,Never,Within 2 hour,1. Delivery App
+39,203s,Cleary Ambrose,Local Liquor Store,,Less than $100,1-3x a week,$100 - $300,buying the alcohol,Smoke Shop,,Once a month,"having too much to satisfy the craving of buying the product, dont want a whole pack",Once a week,Within 30 minutes,1. Delivery App
+40,488s,Samantha Nieto,I don’t purchase alcohol,,Less than $100,Never,Less than $100,The price of some bottles,I don’t purchase nicotine/smoke products,,Never,,Never,Within 1 hour,1. Delivery App
+41,104s,Andrea Trujillo,Local Liquor Store,,Less than $100,1-3x a week,$100 - $300,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 1 hour,2. Physical Store
+42,90s,Ashley Corso,"Large Retailer (Total Wine, Specs, Etc)",,$100 - $300,1-3x a week,$100 - $300,,Gas Station,,2-3 times a month,,Once a week,Within 30 minutes,1. Delivery App
+43,118s,Andrea Trujillo,Local Liquor Store,,Less than $100,1-3x a week,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Once a week,Within 30 minutes,2. Physical Store
+44,78s,Charles De Mey,I don’t purchase alcohol,,Less than $100,Once a month,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 30 minutes,2. Physical Store
+45,163s,Jake Noda,Local Liquor Store,,Less than $100,1-3x a week,Less than $100,I have to walk there,I don’t purchase nicotine/smoke products,,Never,,Once a week,Within 30 minutes,1. Delivery App
+46,112s,Samuel Richardson,"Large Retailer (Total Wine, Specs, Etc)",,$100 - $300,Once a month,Less than $100,Getting ID’d every single time,Grocery Store,,1-3x a week,Knowing who has what pouch flavors and mg,Once a week,Within 4 hours,1. Delivery App
+47,107s,Alex Silveyra,I don’t purchase alcohol,,Less than $100,Never,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 3 hours,1. Delivery App
+48,101s,Ian Slater,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,Once a month,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 4 hours,2. Physical Store
+49,161s,Rohan Balgobin,Local Liquor Store,,Less than $100,1-3x a week,$100 - $300,Having to carry it back to my house since I do not have a car.,I don’t purchase nicotine/smoke products,,Never,N/a,Once a month,Within 1 hour,1. Delivery App
+50,48s,Rohan Sohini,I don’t purchase alcohol,,Less than $100,Never,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 4 hours,2. Physical Store
+51,226s,Aden Benson,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,1-3x a week,$100 - $300,,I don’t purchase nicotine/smoke products,,Never,,2-4x a week,Within 1 hour,1. Delivery App
+52,45s,Kamran Nia,I don’t purchase alcohol,,Less than $100,Never,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 30 minutes,2. Physical Store
+53,86s,Alexander Silveyra,I don’t purchase alcohol,,Less than $100,Never,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 1 hour,2. Physical Store
+54,88s,Emre Ersahin,Alcohol Delivery App,DoorDash,Less than $100,1-3x a week,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Once a week,Within 1 hour,1. Delivery App
+55,82s,Michael Bronstein,I don’t purchase alcohol,,Less than $100,Once a month,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 2 hour,2. Physical Store
+56,82s,John Hileman,Local Liquor Store,,Less than $100,2-3 times a month,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Once a month,Within 4 hours,1. Delivery App
+57,182s,Adrian Requena,Local Liquor Store,,Less than $100,2-3 times a month,Less than $100,Finding alcohol I want close to me,I don’t purchase nicotine/smoke products,,Never,N/A,Once a month,Within 1 hour,2. Physical Store
+58,330s,Ron Cabrera,Local Liquor Store,,$300 - $500,2-3 times a month,$100 - $300,Shop distance and timing,Online Retailers,,2-3 times a month,Delivery times,Once a month,Within 30 minutes,1. Delivery App
+59,372s,Wyatt Stutzman,Local Liquor Store,,Less than $100,1-3x a week,Less than $100,Going to pick it up,Gas Station,,2-3 times a month,Picking it up,2-4x a month,Within 1 hour,1. Delivery App
+60,268s,Mando Garcia,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,Once a month,Less than $100,Having to pick it ip,Online Retailers,,Once a month,Havw to wait until coworker comes back 1 a month for more nicotine (outsourcing to another state is cheaper),Once a month,Within 2 hour,1. Delivery App
+61,91s,Armina Javorovac,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,1-3x a week,$100 - $300,,Gas Station,,Once a month,,Once a week,Within 1 hour,2. Physical Store
+62,100s,Tomide Owolabi,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,2-3 times a month,Less than $100,Finding a convenient liquor store.,I don’t purchase nicotine/smoke products,,Never,,Once a month,Within 30 minutes,1. Delivery App
+63,208s,Xoxi Boggs,I don’t purchase alcohol,,Less than $100,Never,Less than $100,Not knowing what to buy or any recipes or mixers that go well with it,I don’t purchase nicotine/smoke products,,Never,You never really know the potency or flavor until using it,Never,Within 30 minutes,2. Physical Store
+64,242s,Nick Boggs,I don’t purchase alcohol,,Less than $100,Never,Less than $100,They don’t let me sell it to the kids outside the store.,Smoke Shop,,Once a month,The stores always look like trap houses,Never,Within 4 hours,1. Delivery App
+65,154s,Corey Haas,Local Liquor Store,,Less than $100,1-3x a week,$100 - $300,Having to go to the liquor store,Smoke Shop,,Once a month,Having to go to the smoke shop,Once a week,Within 1 hour,2. Physical Store
+66,205s,Harrison Fletcher,Local Liquor Store,,Less than $100,1-3x a week,$300 - $500,Price & beer selection,Smoke Shop,,Once a month,,2-4x a week,Within 30 minutes,2. Physical Store
+67,149s,Nour Efein,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,Once a month,Less than $100,Um.. maybe finding somewhere in city that has it close by,Smoke Shop,,1-3x a week,"Hard to find in city, as well as overpriced in city",Never,Within 1 hour,2. Physical Store
+68,96s,Juan Diego Munoz,Local Liquor Store,,Less than $100,2-3 times a month,$100 - $300,"Price of local stores, time it takes to pick up at a place with warehouse pricing",Gas Station,,Once a month,I want it NOW so need to walk to get it,2-4x a month,Within 1 hour,1. Delivery App
+69,120s,Noah Sutton,I don’t purchase alcohol,,Less than $100,Once a month,Less than $100,,Smoke Shop,,Never,,Never,Within 1 hour,1. Delivery App
+70,103s,Mason Trevino,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,Once a month,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 1 hour,2. Physical Store
+71,141s,Jennifer Ho,Local Liquor Store,,Less than $100,Once a month,Less than $100,Going in person,I don’t purchase nicotine/smoke products,,Never,,Once a month,Within 2 hour,2. Physical Store
+72,96s,Amy Martinez,Local Liquor Store,,Less than $100,Once a month,Less than $100,,Smoke Shop,,1-3x a week,,Never,Within 1 hour,1. Delivery App
+73,106s,Alexis Madrigal,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,Once a month,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 1 hour,1. Delivery App
+74,251s,Karina Martinez,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,Once a month,Less than $100,The creepy men who stare at women and make the experience of purchasing alcohol uncomfortable,I don’t purchase nicotine/smoke products,,Never,,Once a month,Within 30 minutes,1. Delivery App
+75,106s,Dana V,Local Liquor Store,,Less than $100,Once a month,Less than $100,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 1 hour,2. Physical Store
+76,568s,Daniel Ruano,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,1-3x a week,$100 - $300,Not enough variety of mixers,Smoke Shop,,2-3 times a month,Too much variety and not enough simplicity/organization,2-4x a month,Within 2 hour,1. Delivery App
+77,141s,Sammy,"Large Retailer (Total Wine, Specs, Etc)",,Less than $100,2-3 times a month,$100 - $300,,Smoke Shop,,Once a month,,Once a month,Within 30 minutes,1. Delivery App
+78,235s,Filip Da Silva,Local Liquor Store,,Less than $100,Once a month,Less than $100,"finding what you want in the store probably, or going to the store at all",I don’t purchase nicotine/smoke products,,Never,,Never,Within 30 minutes,2. Physical Store
+79,137s,Daniela Rodriguez,Local Liquor Store,,Less than $100,Once a month,Less than $100,All the choices,Smoke Shop,,Once a month,Don’t really buy often enough,Never,Within 1 hour,2. Physical Store
+80,249s,Karla Rodriguez,"Large Retailer (Total Wine, Specs, Etc)",,$100 - $300,Once a month,Less than $100,Having to locate my ID,Smoke Shop,,2-3 times a month,The price,Once a month,Within 4 hours,2. Physical Store
+81,88s,Mridula Karthikeyan,Local Liquor Store,,Less than $100,Once a month,$100 - $300,,I don’t purchase nicotine/smoke products,,Never,,Never,Within 30 minutes,2. Physical Store`;
+
+        function parseCSV(csvString) {
+            const lines = csvString.split('\n').filter(line => line.trim() !== '');
+            if (lines.length === 0) return [];
+
+            // Parse headers
+            const headerLine = lines[0];
+            const headers = [];
+            let inQuote = false;
+            let currentHeader = '';
+            for (let i = 0; i < headerLine.length; i++) {
+                const char = headerLine[i];
+                if (char === '"') {
+                    inQuote = !inQuote;
+                } else if (char === ',' && !inQuote) {
+                    headers.push(currentHeader.trim());
+                    currentHeader = '';
+                } else {
+                    currentHeader += char;
+                }
+            }
+            headers.push(currentHeader.trim()); // Add the last header
+
+            const columnMap = {
+                "Index": "Index",
+                "Time Spent Completing Survey": "TimeSpent",
+                "1: Name：": "Name",
+                "4: Where do you purchase alcohol?": "AlcoholPurchaseLocation",
+                "5: Which Alcohol Delivery App?": "AlcoholDeliveryApp",
+                "6: Approximately, how much do you spend on nicotine/smoke products every month?": "MonthlyNicotineSpend",
+                "7: How often do you purchase alcohol? (Not including bars or restaurants)": "AlcoholPurchaseFrequency",
+                "8: Approximately, how much do you spend on alcohol every month? (Not including bars or restaurants)": "MonthlyAlcoholSpend",
+                "9: What's the most inconvenient thing about buying alcohol? - not required but we would love your answer :)": "AlcoholInconvenience",
+                "10: Where do you purchase nicotine/smoke products?": "NicotinePurchaseLocation",
+                "11: Which Smoke Delivery App?": "NicotineDeliveryApp",
+                "12: How often do you purchase nicotine/smoke products?": "NicotinePurchaseFrequency",
+                "13: What's the most inconvenient thing about buying nicotine/smoke products? - not Required but we would love your answer :)": "NicotineInconvenience",
+                "14: How often would you use an alcohol & smoke product delivery service?": "DeliveryServiceUsageFrequency",
+                "15: Does it matter how fast your delivery arrives?": "DeliverySpeedImportance",
+                "16: Would you rather: 1. Use a delivery app to get your party products delivered to you within 3 hours for a small fee2. Go to physical stores to purchase your party products": "PreferenceDeliveryVsStore"
+            };
+
+            const cleanHeaders = headers.map(h => columnMap[h] || h.replace(/[^a-zA-Z0-9]/g, ''));
+
+            const data = [];
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i];
+                const values = [];
+                let inQuote = false;
+                let currentVal = '';
+
+                for (let k = 0; k < line.length; k++) {
+                    const char = line[k];
+                    if (char === '"') {
+                        if (inQuote && line[k + 1] === '"') { // Handle escaped double quote ""
+                            currentVal += '"';
+                            k++; // Skip the second quote
+                        } else {
+                            inQuote = !inQuote;
+                        }
+                    } else if (char === ',' && !inQuote) {
+                        values.push(currentVal);
+                        currentVal = '';
+                    } else {
+                        currentVal += char;
+                    }
+                }
+                values.push(currentVal); // Add the last value
+
+                const row = {};
+                for (let j = 0; j < cleanHeaders.length && j < values.length; j++) {
+                    row[cleanHeaders[j]] = values[j].trim();
+                }
+                data.push(row);
+            }
+            return data;
+        }
+
+        const surveyData = parseCSV(surveyDataRaw);
+        const totalRespondents = surveyData.length;
+
+        // --- Helper functions for data aggregation ---
+        function getCounts(data, key) {
+            const counts = {};
+            data.forEach(item => {
+                const value = item[key];
+                if (value) { // Ensure value is not empty or null/undefined
+                    counts[value] = (counts[value] || 0) + 1;
+                }
+            });
+            return counts;
+        }
+
+        function analyzeInconveniences(data, key) {
+            const inconveniences = {};
+            const stopWords = ['not', 'the', 'and', 'with', 'when', 'from', 'much', 'more', 'they', 'cant', 'etc', 'are', 'for', 'you', 'too', 'it', 'my', 'your', 'any', 'how', 'have', 'just', 'need', 'still', 'where', 'also', 'about', 'some', 'make', 'purchase', 'buying', 'products', 'party', 'count', 'want', 'don’t', 'really', 'find', 'get', 'up', 'going', 'is', 'a', 'to', 'its', 'itself', 'or']; // Added more stop words
+            data.forEach(item => {
+                const comment = item[key];
+                if (comment && comment.toLowerCase() !== 'n/a' && comment.trim() !== '') {
+                    const normalizedComment = comment.toLowerCase();
+
+                    // Group similar phrases
+                    if (normalizedComment.includes('store') || normalizedComment.includes('physical') || normalizedComment.includes('walk') || normalizedComment.includes('driving') || normalizedComment.includes('pick it up') || normalizedComment.includes('travel') || normalizedComment.includes('distance')) {
+                        inconveniences['Going to Physical Store / Travel'] = (inconveniences['Going to Physical Store / Travel'] || 0) + 1;
+                    } else if (normalizedComment.includes('price') || normalizedComment.includes('taxes') || normalizedComment.includes('overpriced') || normalizedComment.includes('cost') || normalizedComment.includes('cheaper')) {
+                        inconveniences['Price / Cost'] = (inconveniences['Price / Cost'] || 0) + 1;
+                    } else if (normalizedComment.includes('selection') || normalizedComment.includes('variety') || normalizedComment.includes('bottles') || normalizedComment.includes('brand') || normalizedComment.includes('out of stock') || normalizedComment.includes('specific') || normalizedComment.includes('choices') || normalizedComment.includes('flavor')) {
+                        inconveniences['Limited Selection / Out of Stock'] = (inconveniences['Limited Selection / Out of Stock'] || 0) + 1;
+                    } else if (normalizedComment.includes('carry') || normalizedComment.includes('heavy') || normalizedComment.includes('bike') || normalizedComment.includes('car')) {
+                        inconveniences['Physical Effort / Carrying'] = (inconveniences['Physical Effort / Carrying'] || 0) + 1;
+                    } else if (normalizedComment.includes('late') || normalizedComment.includes('close') || normalizedComment.includes('hours') || normalizedComment.includes('timing')) {
+                        inconveniences['Store Hours / Timings'] = (inconveniences['Store Hours / Timings'] || 0) + 1;
+                    } else if (normalizedComment.includes('id') || normalizedComment.includes('carded')) {
+                        inconveniences['ID Checks'] = (inconveniences['ID Checks'] || 0) + 1;
+                    } else if (normalizedComment.includes('creepy') || normalizedComment.includes('stare') || normalizedComment.includes('uncomfortable') || normalizedComment.includes('trap houses')) {
+                        inconveniences['Uncomfortable Store Experience'] = (inconveniences['Uncomfortable Store Experience'] || 0) + 1;
+                    } else if (normalizedComment.includes('ratings') || normalizedComment.includes('reviews') || normalizedComment.includes('know what to buy') || normalizedComment.includes('understanding differences') || normalizedComment.includes('potency') || normalizedComment.includes('recipes') || normalizedComment.includes('mixers')) {
+                        inconveniences['Lack of Information / Guidance'] = (inconveniences['Lack of Information / Guidance'] || 0) + 1;
+                    } else if (normalizedComment.includes('delivery times') || normalizedComment.includes('wait until coworker comes back') || normalizedComment.includes('delivery delays')) {
+                        inconveniences['Delivery Delays / Wait Time'] = (inconveniences['Delivery Delays / Wait Time'] || 0) + 1;
+                    }
+                    // Generic categories for less specific but common phrases, or if few mentions, just ignore for top 5.
+                }
+            });
+
+            const sorted = Object.entries(inconveniences).sort((a, b) => b[1] - a[1]);
+            return sorted.slice(0, 5); // Top 5 inconveniences
+        }
+
+        // Define a color palette for charts
+        const brayziColors = {
+            primary: 'rgba(26, 77, 46, 0.7)', // Brayzi Green
+            secondary: 'rgba(52, 152, 219, 0.7)', // Blue
+            tertiary: 'rgba(243, 156, 18, 0.7)', // Orange
+            quaternary: 'rgba(155, 89, 182, 0.7)', // Purple
+            quinary: 'rgba(231, 76, 60, 0.7)', // Red
+            grey: 'rgba(149, 165, 166, 0.7)' // Grey for physical store
+        };
+        const borderColors = {
+            primary: 'rgba(26, 77, 46, 1)',
+            secondary: 'rgba(52, 152, 219, 1)',
+            tertiary: 'rgba(243, 156, 18, 1)',
+            quaternary: 'rgba(155, 89, 182, 1)',
+            quinary: 'rgba(231, 76, 60, 1)',
+            grey: 'rgba(149, 165, 166, 1)'
+        };
+        const allColors = [
+            brayziColors.primary, brayziColors.secondary, brayziColors.tertiary,
+            brayziColors.quaternary, brayziColors.quinary, brayziColors.grey,
+            'rgba(75, 192, 192, 0.7)', 'rgba(255, 99, 132, 0.7)' // Additional colors if needed
+        ];
+        const allBorderColors = [
+            borderColors.primary, borderColors.secondary, borderColors.tertiary,
+            borderColors.quaternary, borderColors.quinary, borderColors.grey,
+            'rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'
+        ];
+
+
+        // --- Prepare data for charts ---
+        const alcoholPurchasers = surveyData.filter(d => d.AlcoholPurchaseLocation && d.AlcoholPurchaseLocation !== "I don’t purchase alcohol");
+        const nicotinePurchasers = surveyData.filter(d => d.NicotinePurchaseLocation && d.NicotinePurchaseLocation !== "I don’t purchase nicotine/smoke products");
+
+
+        // Alcohol Purchase Location
+        const alcoholLocCounts = getCounts(alcoholPurchasers, 'AlcoholPurchaseLocation');
+        const sortedAlcoholLocLabels = Object.keys(alcoholLocCounts).sort();
+        const sortedAlcoholLocData = sortedAlcoholLocLabels.map(label => alcoholLocCounts[label]);
+        const alcoholLocData = {
+            labels: sortedAlcoholLocLabels,
+            datasets: [{
+                label: 'Respondents',
+                data: sortedAlcoholLocData,
+                backgroundColor: allColors.slice(0, sortedAlcoholLocLabels.length),
+                borderColor: allBorderColors.slice(0, sortedAlcoholLocLabels.length),
+                borderWidth: 1
+            }]
+        };
+
+        // Alcohol Purchase Frequency
+        const alcoholFreqCounts = getCounts(alcoholPurchasers, 'AlcoholPurchaseFrequency');
+        const alcoholFreqOrder = ["Never", "Once a month", "2-3 times a month", "1-3x a week", "2-4x a week", "Daily"];
+        const sortedAlcoholFreqLabels = alcoholFreqOrder.filter(f => alcoholFreqCounts[f]);
+        const sortedAlcoholFreqData = sortedAlcoholFreqLabels.map(label => alcoholFreqCounts[label]);
+        const alcoholFreqData = {
+            labels: sortedAlcoholFreqLabels,
+            datasets: [{
+                label: 'Respondents',
+                data: sortedAlcoholFreqData,
+                backgroundColor: brayziColors.secondary,
+                borderColor: borderColors.secondary,
+                borderWidth: 1
+            }]
+        };
+
+        // Monthly Alcohol Spending
+        const alcoholSpendCounts = getCounts(alcoholPurchasers, 'MonthlyAlcoholSpend');
+        const alcoholSpendOrder = ["Less than $100", "$100 - $300", "$300 - $500", "More than $500"];
+        const sortedAlcoholSpendLabels = alcoholSpendOrder.filter(s => alcoholSpendCounts[s]);
+        const sortedAlcoholSpendData = sortedAlcoholSpendLabels.map(label => alcoholSpendCounts[label]);
+        const alcoholSpendData = {
+            labels: sortedAlcoholSpendLabels,
+            datasets: [{
+                label: 'Respondents',
+                data: sortedAlcoholSpendData,
+                backgroundColor: brayziColors.tertiary,
+                borderColor: borderColors.tertiary,
+                borderWidth: 1
+            }]
+        };
+
+        // Nicotine Purchase Location
+        const nicotineLocCounts = getCounts(nicotinePurchasers, 'NicotinePurchaseLocation');
+        const sortedNicotineLocLabels = Object.keys(nicotineLocCounts).sort();
+        const sortedNicotineLocData = sortedNicotineLocLabels.map(label => nicotineLocCounts[label]);
+        const nicotineLocData = {
+            labels: sortedNicotineLocLabels,
+            datasets: [{
+                label: 'Respondents',
+                data: sortedNicotineLocData,
+                backgroundColor: allColors.slice(0, sortedNicotineLocLabels.length),
+                borderColor: allBorderColors.slice(0, sortedNicotineLocLabels.length),
+                borderWidth: 1
+            }]
+        };
+
+        // Nicotine Purchase Frequency
+        const nicotineFreqCounts = getCounts(nicotinePurchasers, 'NicotinePurchaseFrequency');
+        const nicotineFreqOrder = ["Never", "Once a month", "2-3 times a month", "1-3x a week", "2-4x a month", "2-4x a week", "Daily"];
+        const sortedNicotineFreqLabels = nicotineFreqOrder.filter(f => nicotineFreqCounts[f]);
+        const sortedNicotineFreqData = sortedNicotineFreqLabels.map(label => nicotineFreqCounts[label]);
+        const nicotineFreqData = {
+            labels: sortedNicotineFreqLabels,
+            datasets: [{
+                label: 'Respondents',
+                data: sortedNicotineFreqData,
+                backgroundColor: brayziColors.quaternary,
+                borderColor: borderColors.quaternary,
+                borderWidth: 1
+            }]
+        };
+
+        // Monthly Nicotine Spending (Corrected to filter by nicotinePurchasers)
+        const nicotineSpendCounts = getCounts(nicotinePurchasers, 'MonthlyNicotineSpend');
+        const nicotineSpendOrder = ["Less than $100", "$100 - $300", "$300 - $500", "More than $500"];
+        const sortedNicotineSpendLabels = nicotineSpendOrder.filter(s => nicotineSpendCounts[s]);
+        const sortedNicotineSpendData = sortedNicotineSpendLabels.map(label => nicotineSpendCounts[label]);
+        const nicotineSpendData = {
+            labels: sortedNicotineSpendLabels,
+            datasets: [{
+                label: 'Respondents',
+                data: sortedNicotineSpendData,
+                backgroundColor: brayziColors.quinary,
+                borderColor: borderColors.quinary,
+                borderWidth: 1
+            }]
+        };
+
+
+        // Delivery Service Usage Frequency
+        const deliveryUsageCounts = getCounts(surveyData, 'DeliveryServiceUsageFrequency');
+        const deliveryUsageOrder = ["Never", "Once a month", "2-4x a month", "Once a week", "2-4x a week", "Daily"];
+        const sortedDeliveryUsageLabels = deliveryUsageOrder.filter(f => deliveryUsageCounts[f]);
+        const sortedDeliveryUsageData = sortedDeliveryUsageLabels.map(label => deliveryUsageCounts[label]);
+        const deliveryUsageData = {
+            labels: sortedDeliveryUsageLabels,
+            datasets: [{
+                label: 'Respondents',
+                data: sortedDeliveryUsageData,
+                backgroundColor: brayziColors.primary,
+                borderColor: borderColors.primary,
+                borderWidth: 1
+            }]
+        };
+
+        // Delivery Speed Importance
+        const deliverySpeedCounts = getCounts(surveyData, 'DeliverySpeedImportance');
+        const deliverySpeedOrder = ["Within 30 minutes", "Within 1 hour", "Within 2 hour", "Within 3 hours", "Within 4 hours", "Doesn't matter"];
+        const sortedDeliverySpeedLabels = deliverySpeedOrder.filter(s => deliverySpeedCounts[s]);
+        const sortedDeliverySpeedData = sortedDeliverySpeedLabels.map(label => deliverySpeedCounts[label]);
+        const deliverySpeedData = {
+            labels: sortedDeliverySpeedLabels,
+            datasets: [{
+                label: 'Respondents',
+                data: sortedDeliverySpeedData,
+                backgroundColor: brayziColors.secondary,
+                borderColor: borderColors.secondary,
+                borderWidth: 1
+            }]
+        };
+
+        // Preference: Delivery App vs. Physical Store
+        const preferenceCounts = getCounts(surveyData, 'PreferenceDeliveryVsStore');
+        const sortedPreferenceLabels = Object.keys(preferenceCounts).sort();
+        const sortedPreferenceData = sortedPreferenceLabels.map(label => preferenceCounts[label]);
+        const preferenceData = {
+            labels: sortedPreferenceLabels,
+            datasets: [{
+                label: 'Respondents',
+                data: sortedPreferenceData,
+                backgroundColor: [
+                    brayziColors.primary, // Delivery App (Brayzi Green)
+                    brayziColors.grey // Physical Store (Grey)
+                ],
+                borderColor: [
+                    borderColors.primary,
+                    borderColors.grey
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        // --- Render Charts ---
+        function renderChart(canvasId, type, data, title) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) {
+                console.error(`Canvas element with ID '${canvasId}' not found.`);
+                return;
+            }
+            new Chart(ctx.getContext('2d'), {
+                type: type,
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true, /* Ensures charts scale proportionally */
+                    plugins: {
+                        legend: {
+                            display: type !== 'pie' && type !== 'doughnut',
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: title,
+                            font: {
+                                size: 18,
+                                weight: 'bold'
+                            },
+                            color: '#333'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== undefined) { // For bar charts
+                                        const total = context.dataset.data.reduce((a,b)=>a+b,0);
+                                        label += `${context.parsed.y} (${((context.parsed.y / total) * 100).toFixed(1)}%)`;
+                                    } else if (context.parsed) { // For pie/doughnut charts
+                                        const total = context.dataset.data.reduce((acc, val) => acc + val, 0);
+                                        const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                        label = `${context.label}: ${context.parsed} (${percentage}%)`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0,
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('totalRespondentsCount').textContent = totalRespondents;
+
+            renderChart('alcoholPurchaseLocationChart', 'bar', alcoholLocData, 'Where Consumers Purchase Alcohol');
+            renderChart('alcoholPurchaseFrequencyChart', 'bar', alcoholFreqData, 'Alcohol Purchase Frequency');
+            renderChart('alcoholSpendingChart', 'bar', alcoholSpendData, 'Monthly Alcohol Spending');
+
+            renderChart('nicotinePurchaseLocationChart', 'bar', nicotineLocData, 'Where Consumers Purchase Nicotine/Smoke Products');
+            renderChart('nicotinePurchaseFrequencyChart', 'bar', nicotineFreqData, 'Nicotine/Smoke Product Purchase Frequency');
+            renderChart('nicotineSpendingChart', 'bar', nicotineSpendData, 'Monthly Nicotine/Smoke Product Spending');
+
+            renderChart('deliveryUsageFrequencyChart', 'bar', deliveryUsageData, 'Anticipated Delivery Service Usage Frequency');
+            renderChart('deliverySpeedImportanceChart', 'bar', deliverySpeedData, 'Importance of Delivery Speed');
+            renderChart('preferenceChart', 'pie', preferenceData, 'Consumer Preference: Delivery App vs. Physical Store');
+
+            // --- Populate Key Metrics ---
+            const alcoholBuyers = surveyData.filter(d => d.AlcoholPurchaseLocation && d.AlcoholPurchaseLocation !== "I don’t purchase alcohol").length;
+            const nicotineBuyers = surveyData.filter(d => d.NicotinePurchaseLocation && d.NicotinePurchaseLocation !== "I don’t purchase nicotine/smoke products").length;
+
+            const wouldUseDeliveryOften = surveyData.filter(d =>
+                d.DeliveryServiceUsageFrequency === "Once a week" ||
+                d.DeliveryServiceUsageFrequency === "2-4x a week" ||
+                d.DeliveryServiceUsageFrequency === "2-4x a month" ||
+                d.DeliveryServiceUsageFrequency === "Once a month"
+            ).length;
+            const percentWouldUseDeliveryOften = ((wouldUseDeliveryOften / totalRespondents) * 100).toFixed(0);
+
+
+            const preferDelivery = surveyData.filter(d => d.PreferenceDeliveryVsStore.includes("1. Delivery App")).length;
+            const percentPreferDelivery = ((preferDelivery / totalRespondents) * 100).toFixed(0);
+
+            const fastDeliveryImportant = surveyData.filter(d =>
+                d.DeliverySpeedImportance === "Within 30 minutes" ||
+                d.DeliverySpeedImportance === "Within 1 hour"
+            ).length;
+            const percentFastDeliveryImportant = ((fastDeliveryImportant / totalRespondents) * 100).toFixed(0);
+
+            const highAlcoholSpenders = surveyData.filter(d => d.MonthlyAlcoholSpend === "$100 - $300" || d.MonthlyAlcoholSpend === "$300 - $500" || d.MonthlyAlcoholSpend === "More than $500").length;
+            const percentHighAlcoholSpenders = ((highAlcoholSpenders / totalRespondents) * 100).toFixed(0);
+
+
+            const metrics = [
+                { title: "Total Survey Respondents", value: totalRespondents },
+                { title: "Alcohol Purchasers (of all respondents)", value: `${((alcoholBuyers / totalRespondents) * 100).toFixed(0)}%` },
+                { title: "Nicotine/Smoke Purchasers (of all respondents)", value: `${((nicotineBuyers / totalRespondents) * 100).toFixed(0)}%` },
+                { title: "Prefer Delivery App (over physical store)", value: `${percentPreferDelivery}%` },
+                { title: "Want Delivery Within 1 Hour (or faster)", value: `${percentFastDeliveryImportant}%` },
+                { title: "Would Use Delivery Monthly or More", value: `${percentWouldUseDeliveryOften}%` },
+                { title: "High Value Alcohol Purchasers (>$100/month)", value: `${percentHighAlcoholSpenders}%` },
+            ];
+
+            const keyMetricsDiv = document.getElementById('keyMetrics');
+            metrics.forEach(metric => {
+                const card = document.createElement('div');
+                card.className = 'metric-card';
+                card.innerHTML = `<h4>${metric.title}</h4><div class="value">${metric.value}</div>`;
+                keyMetricsDiv.appendChild(card);
+            });
+
+
+            // --- Populate Inconveniences ---
+            const topAlcoholInconveniences = analyzeInconveniences(surveyData, 'AlcoholInconvenience');
+            const alcoholUl = document.getElementById('alcoholInconveniences');
+            topAlcoholInconveniences.forEach(([theme, count]) => {
+                const li = document.createElement('li');
+                li.textContent = `${theme} (${count} mentions)`;
+                alcoholUl.appendChild(li);
+            });
+
+            const topNicotineInconveniences = analyzeInconveniences(surveyData, 'NicotineInconvenience');
+            const nicotineUl = document.getElementById('nicotineInconveniences');
+            topNicotineInconveniences.forEach(([theme, count]) => {
+                const li = document.createElement('li');
+                li.textContent = `${theme} (${count} mentions)`;
+                nicotineUl.appendChild(li);
+            });
+        });
+    </script>
+</body>
+</html>
